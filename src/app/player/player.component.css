@@ -1,0 +1,80 @@
+
+
+.player {
+    width: 700px;
+    border: 1px solid gray;
+    padding: 20px;
+    border-radius: 5px;
+    background: #E3E3E3;
+    position: fixed;
+    bottom: 5px;
+    left: 50%;
+    transform: translate(-50%);
+    transition: all .5s;
+}
+
+.disabled {
+    bottom: -1000px;
+}
+
+.slider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.input-slider {
+    width: 100%;
+    cursor: pointer;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pl_button {
+    width: 40px;
+    border: none;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 2px 0 2px ;
+    height: 30px;
+    border-radius: 5px;
+    background: none;
+    outline: none;
+}
+
+.audio_name {
+    text-align: center;
+    font-size: 16px;
+}
+
+.volume_control {
+    display: flex;
+    align-items: center;
+}
+
+.volume_control > .volume_slider {
+    width: 60px;
+    cursor: pointer;
+}
+
+.audio_icon{
+     width: 30px;
+     cursor: pointer;
+}
+
+.audio_list > img{
+    margin: 0 4px 0 4px;
+}
+
+.controlss{ 
+    display: flex;
+    justify-content: space-between;
+}
