@@ -1,11 +1,22 @@
-import { Component, Input } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { Data } from 'src/types/types';
 
 @Component({
-  selector: 'player',
+  selector: 'c-player',
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.css'],
 })
-export class PlayerComponent {
+export class PlayerComponent implements OnChanges {
+  @Input('playNow') playNow: Data;
+  @Input('audioData') audioData: Data[];
+
   icons = {
     playIcon: 'assets/images/play.svg',
     nextIcon: 'assets/images/next.svg',
@@ -17,13 +28,7 @@ export class PlayerComponent {
     volumeMutedIcon: 'assets/images/volume_muted.svg',
   };
 
-  @Input()
-  audioPaths: string[] = [
-    'assets/audio/tri_medvedya.mp3',
-    'assets/audio/kashka_iz_topora.mp3',
-  ];
-
-  private audio = new Audio();
+  private readonly audio = new Audio();
 
   playingAudio = '';
   isMuted = false;
@@ -37,42 +42,61 @@ export class PlayerComponent {
   currentSeconds = 0;
   currentMove = 0;
 
-  constructor() {
-    this.audio.src = this.audioPaths[1];
-    this.playingAudio = this.audioPaths[1].split('/')[2];
-    this.audio.currentTime = this.currentSeconds;
+  constructor() {}
+
+  ngOnChanges(): void {
+    this.setAudio();
+  }
+
+  @Output()
+  playerEmitter = new EventEmitter<Data>();
+
+  setAudio() {
+    this.audio.src = this.playNow.path;
+    this.playingAudio = this.playNow.name;
+    this.control();
   }
 
   public control() {
     this.audio.paused ? this.audio.play() : this.audio.pause();
 
     this.isPaused = this.audio.paused;
-    this.totalMinutes = this.secondsToMinutes(Math.ceil(this.audio.duration));
 
     if (this.isPaused) {
-      this.clear();
+      this.pause();
       return;
     }
 
     this.clear = this.nextTick(() => {
       if (this.audio.ended) {
-        this.currentMove = 0;
-        this.currentSeconds = 0;
-
-        if (this.isRepeat) {
-          return this.audio.play();
-        }
-        if (!this.isRepeat) {
-          this.isPaused = true;
-          return this.clear();
-        }
+        return this.ended();
       }
       this.currentSeconds++;
       this.currentMove = Math.floor(
         this.currentSeconds / (this.audio.duration / 100)
       );
       this.currentMinutes = this.secondsToMinutes(this.currentSeconds);
+      this.totalMinutes = this.secondsToMinutes(Math.ceil(this.audio.duration));
     });
+  }
+
+  public pause() {
+    if (typeof this.clear === 'function') return this.clear();
+  }
+
+  public ended() {
+    if (this.isRepeat) {
+      this.currentMove = 0;
+      this.currentSeconds = 0;
+      this.clear();
+      this.control();
+      return;
+    }
+    if (!this.isRepeat) {
+      this.isPaused = true;
+      this.pause();
+      return;
+    }
   }
 
   public volume(event: Event) {
@@ -132,7 +156,15 @@ export class PlayerComponent {
     return `${time[1]}:${time[2]}`;
   }
 
-  public next() {}
+  public next() {
+    this.ended();
+    this.playNow = this.audioData[this.playNow.id + 1] || this.playNow;
+    this.setAudio();
+  }
 
-  public prev() {}
+  public prev() {
+    this.ended();
+    this.playNow = this.audioData[this.playNow.id - 1] || this.playNow;
+    this.setAudio();
+  }
 }

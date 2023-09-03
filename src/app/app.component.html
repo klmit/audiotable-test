@@ -1,7 +1,7 @@
  
-
+  
 <div class="root">
-   <mat-table [data]="data"></mat-table>
-   <player></player>
+   <c-table (audioEvent)="setAudio($event)" [audioData]="audioData" [playNow]="playNow"></c-table>
+   <c-player [audioData]="audioData" [playNow]="playNow"></c-player>
 </div>
  

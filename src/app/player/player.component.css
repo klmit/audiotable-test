@@ -2,15 +2,16 @@
 
 .player {
     width: 700px;
-    border: 1px solid gray;
+    border: 1px solid #424242;
     padding: 20px;
     border-radius: 5px;
-    background: #E3E3E3;
+    background: #424242;
     position: fixed;
     bottom: 5px;
     left: 50%;
     transform: translate(-50%);
     transition: all .5s;
+    color: white;
 }
 
 .disabled {
@@ -49,6 +50,8 @@
     background: none;
     outline: none;
 }
+
+ 
 
 .audio_name {
     text-align: center;
