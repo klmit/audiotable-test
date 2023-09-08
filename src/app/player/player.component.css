@@ -81,3 +81,9 @@
     display: flex;
     justify-content: space-between;
 }
+
+@media screen and (max-width: 740px){
+    .player {
+         width: 100%;
+    }
+}
