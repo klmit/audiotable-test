@@ -36,7 +36,7 @@ export class PlayerComponent implements OnChanges {
   isRepeat = false;
   volumeProc = 100;
   volumeNow = 100;
-  clear: any;
+  clear: () => void;
   totalMinutes = '';
   currentMinutes = '';
   currentSeconds = 0;
@@ -48,54 +48,61 @@ export class PlayerComponent implements OnChanges {
     this.setAudio();
   }
 
-  @Output()
-  playerEmitter = new EventEmitter<Data>();
-
   setAudio() {
+    this.currentMove = 0;
+    this.currentSeconds = 0;
     this.audio.src = this.playNow.path;
     this.playingAudio = this.playNow.name;
-    this.control();
+    this.playPause();
   }
 
-  public control() {
+  public playPause() {
     this.audio.paused ? this.audio.play() : this.audio.pause();
-
     this.isPaused = this.audio.paused;
 
-    if (this.isPaused) {
-      this.pause();
-      return;
+    if (this.audio.paused) {
+      return this.clearTick();
     }
 
+    if (this.audio.src !== this.playNow.path) {
+      this.clearTick();
+    }
+
+    this.initialTick();
+  }
+
+  private initialTick() {
     this.clear = this.nextTick(() => {
       if (this.audio.ended) {
         return this.ended();
       }
-      this.currentSeconds++;
-      this.currentMove = Math.floor(
-        this.currentSeconds / (this.audio.duration / 100)
-      );
-      this.currentMinutes = this.secondsToMinutes(this.currentSeconds);
-      this.totalMinutes = this.secondsToMinutes(Math.ceil(this.audio.duration));
+      this.tick();
     });
   }
 
-  public pause() {
-    if (typeof this.clear === 'function') return this.clear();
+  private tick() {
+    this.currentSeconds++;
+    this.currentMove = Math.floor(
+      this.currentSeconds / (this.audio.duration / 100)
+    );
+    this.currentMinutes = this.secondsToMinutes(this.currentSeconds);
+    this.totalMinutes = this.secondsToMinutes(Math.ceil(this.audio.duration));
+  }
+
+  public clearTick() {
+    console.log(this.clear);
+    if (typeof this.clear === 'function') this.clear();
   }
 
   public ended() {
     if (this.isRepeat) {
       this.currentMove = 0;
       this.currentSeconds = 0;
-      this.clear();
-      this.control();
-      return;
-    }
-    if (!this.isRepeat) {
+      this.clearTick();
+      this.setAudio();
+    } else {
+      this.clearTick();
       this.isPaused = true;
-      this.pause();
-      return;
     }
   }
 
@@ -122,7 +129,7 @@ export class PlayerComponent implements OnChanges {
     this.currentSeconds = Math.ceil(this.audio.currentTime);
   }
 
-  public nextTick(doStep: () => void, time = 1000) {
+  private nextTick(doStep: () => void, time = 1000) {
     let nextAt: number, timeout: any;
     nextAt = new Date().getTime() + time;
 
@@ -157,13 +164,11 @@ export class PlayerComponent implements OnChanges {
   }
 
   public next() {
-    this.ended();
     this.playNow = this.audioData[this.playNow.id + 1] || this.playNow;
     this.setAudio();
   }
 
   public prev() {
-    this.ended();
     this.playNow = this.audioData[this.playNow.id - 1] || this.playNow;
     this.setAudio();
   }

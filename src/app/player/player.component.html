@@ -17,7 +17,7 @@
         <button (click)="prev()" type="button" mat-raised-button color="primary" class="pl_button prev">
             <img src={{icons.prevIcon}} alt="prev"class="audio_icon"/>
         </button>
-        <button type="button" mat-raised-button  color="primary" class="pl_button play" (click)="control()">
+        <button type="button" mat-raised-button  color="primary" class="pl_button play" (click)="playPause()">
             <img *ngIf="isPaused; else elseIcon" src="{{icons.playIcon}}" alt="play" class="audio_icon"/>
              <ng-template #elseIcon>
                 <img src="{{icons.pauseIcon}}" alt="play" class="audio_icon"/>
